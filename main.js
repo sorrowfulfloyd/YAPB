@@ -2,7 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 require('dotenv').config;
 
-const MONGO_DB = mongoose.connect("mongodb+srv://root:asdass123@repairme.qimluao.mongodb.net/main?retryWrites=true&w=majority")
+const MONGO_DB = mongoose.connect(process.env.DB_ADRESS)
 
 const PORT = process.env.PORT || 5500;
 
@@ -43,4 +43,4 @@ const startServer = async () => {
   }
 }
 
-startServer()
+startServer();
