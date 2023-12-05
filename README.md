@@ -38,7 +38,7 @@ _not: sunucu adresinin sonuna KLASÖR eklemeniz önerilir._
 
 > nodemon ile sunucuyu başlatın.
 
-```shell
+```npm
 npm run dev
 ```
 
