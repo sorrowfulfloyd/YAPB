@@ -36,6 +36,12 @@ DB_ADRESS= mongodb+srv://KULLANICI_ADI:ŞİFRE@DROPLET_ADI.qimluao.mongodb.net/K
 
 _not: sunucu adresinin sonuna KLASÖR eklemeniz önerilir._
 
+> nodemon ile sunucuyu başlatın.
+
+```shell
+npm run dev
+```
+
 #### Kullanım
 
 Daha çok erken aşamada olduğu için, varolan bir kaç POST ve GET isteğini main.js'den görebilirsiniz. Program büyüdükçe burayı güncellerim.
