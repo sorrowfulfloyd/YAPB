@@ -1,8 +1,10 @@
 ### YABP™
 
-###### Yet another bookstore project
+###### Yet another bookstore project - *Kim buluyorsa bu isimleri, biraz daha düşünmeli*
 
-**It's full-stacking time**
+**I loved the part when he said "It's full-stacking time"**
+
+**...and full-stacked all over the place.**
 
 Şuanda backend (Expressjs) aşamasında olduğumuz full-stack projemizin haftalık ders programıyla ilerleyişi, sonradan çok değişecek buralar he.
 
