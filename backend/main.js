@@ -15,53 +15,86 @@ app.use(express.json());
 app.post('/books', async (req, res) => {
   try {
     if (Object.keys(req.body).length == 0) {
-      console.log(`Someone tried to make a POST with empty body to '${req.path}'`);
+      console.log(`Birisi boş 'body' ile POST isteği atmaya çalıştı şuraya -> '${req.path}'`);
       return res.status(400).json({
-        message: `Can't make POST requests with empty body!`,
-        example_request: {
-          "title": "Book name",
-          "desc": "Short description",
-          "author": "Author",
-          "publishYear": 1000
-        }
+        message: `Boş 'body' ile POST isteği atamazsınız!`,
+        "örnek istek": exampleRequest
       });
     };
     const newBook = new Book({ ...req.body });
     const book = await newBook.save();
-    console.log(`Book has been created successfully.\n %j`, book);
-    return res.status(201).json({ Status: '201 - Created', message: 'Model is created successfully', bookObj: book });
+    console.log(`Yeni bir kitap başarıyla veritabanında oluşturuldu!\n %j`, book);
+    return res.status(201).json({
+      Status: '201 - Oluşturuldu',
+      message: 'Gönderdiğiniz obje ile veritabanında yeni bir kitap başarıyla oluşturuldu.',
+      "Oluşturulan Objeniz": book
+    });
   } catch (error) {
-    console.log(`Something went wrong while trying to save a book object.\n ${error}\n`)
-    return res.status(500).json({ Status: '500 - Internal Server Error', message: error.message })
+
+    if (error.name == 'ValidationError') { // kullanıcı POST isteği atarken bir yerleri boş bırakırsa...
+      let returnMsg = {};
+      Object.keys(error.errors).forEach((key) => {
+        returnMsg[key] = `Bu yol boş bırakılamaz.`;
+      });
+
+      returnMsg['Örnek POST isteği'] = exampleRequest;
+
+      return res.status(400).json(returnMsg);
+    }
+    console.log(`Bir kitabı veritabanına kaydederken bir sorun oluştu.\n ${error}\n`)
+    return res.status(400).json({ Status: `${req.path} adresine POST isteği atılırken bir hata oluştu!`, 'hata mesajı': error.message, type: error })
   };
 });
 
-// default GET request
-app.get('/', (req, res) => {
-  console.log(`[STATUS] - Recieved a ${req.method} request to '${req.url}' page.`);
-  res.status(200).send('<h1>Hello, World!</h1>')
+// GET all book from DB
+app.get('/books', async (req, res) => {
+  try {
+    const allBooks = await Book.find();
+    return res.status(200).json({ 'Bütün kitapların sayısı': allBooks.length, 'Kitaplar': allBooks })
+  } catch (error) {
+    return res.status(500).json({ Status: 'Veritabanındaki bütün kitapları derlerken bir sorun oluştu!', 'Hata mesajı': error.message })
+  }
 });
 
-// example GET request to a different path
-app.get('/products', (req, res) => {
-  console.log(`[STATUS] - Recieved a ${req.method} request to '${req.url}' page.`);
-  res.status(200).send(`<h1>Products page</h1><p>This will be filled soon.</p>`)
-});
+// GET one book from DB
+app.get('/books/:id', async (req, res) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({
+        'HATA': 'Gönderilen id geçerli değil!',
+        'id': req.params.id
+      })
+    }
+    const singleBookObj = await Book.findById(req.params.id);
 
-// example GET request to a different path with added id. This could be used to search items in DB in the future.
-app.get('/products/:id', (req, res) => {
-  console.log(`[STATUS] - Recieved a ${req.method} request with added '${req.params.id}' parameters to '${req.url}' page.`);
-  res.status(200).send(`<h1>Example Product page</h1><p>You sent a request for this: ${req.params.id}.</p>`)
-});
+    // eğer verilen id geçerli ise, fakat veritabanında böyle bir obje bulunamıyorsa findById() fonksiyonu 'null' dönüyor.
+    // bunun için aşağıda ufak bir kontrolle doğru cevabı gönderebiliriz. 
+    return singleBookObj ?
+      res.status(200).json({
+        'İstediğiniz obje bulundu!': { 'Kitap': singleBookObj }
+      })
+      : res.status(404).json({ 'Hata': 'Verilen id ile veritabanında bir obje bulunamadı', 'id': req.params.id });
+  } catch (error) {
+    return res.status(500).json({ Status: 'Veritabanından bir adet kitap isterken bir sorun oluştu!', 'Hata mesajı': error.message })
+  }
+})
+
+exampleRequest = {
+  "title": "Kitap adı",
+  "desc": "Kitabın açıklaması",
+  "author": "Yazar",
+  "publishYear": 2010
+}
 
 const startServer = async () => {
   try {
     await mongoose.connect(MONGO_URI)
-      .then(() => console.log('[DB] - Connected to DB.'))
-      .catch((err) => { console.log(`[ERROR] Couldn't connect to DB.`); throw err });
+      .then(() => console.log('[DB] - Veritabanına bağlanıldı.'))
+      .catch((err) => { console.log(`[ERROR] Veritabanına bağlanamadım :/`); throw err });
 
     app.listen(PORT, () => {
-      console.log(`[SERVER] - We're in... Port: ${PORT}`)
+      console.log(`Bi' dakika şef, ateşliyorum... 🔥🔥🔥\nTamamdır, içerdeyiz. Port: ${PORT}`)
+
     });
 
   } catch (error) {
