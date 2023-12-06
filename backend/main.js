@@ -18,7 +18,7 @@ app.post('/books', async (req, res) => {
       console.log(`Birisi boş 'body' ile POST isteği atmaya çalıştı şuraya -> '${req.path}'`);
       return res.status(400).json({
         message: `Boş 'body' ile POST isteği atamazsınız!`,
-        "örnek istek": exampleRequest
+        "örnek istek - 'data türüne dikkat edin!'": exampleRequest
       });
     };
     const newBook = new Book({ ...req.body });
@@ -34,10 +34,10 @@ app.post('/books', async (req, res) => {
     if (error.name == 'ValidationError') { // kullanıcı POST isteği atarken bir yerleri boş bırakırsa...
       let returnMsg = {};
       Object.keys(error.errors).forEach((key) => {
-        returnMsg[key] = `Bu yol boş bırakılamaz.`;
+        returnMsg[key] = `<- Yanlış veya eksik değer.`;
       });
 
-      returnMsg['Örnek POST isteği'] = exampleRequest;
+      returnMsg['Örnek POST isteği - "data türüne dikkat edin!"'] = exampleRequest;
 
       return res.status(400).json(returnMsg);
     }
@@ -80,9 +80,9 @@ app.get('/books/:id', async (req, res) => {
 })
 
 exampleRequest = {
-  "title": "Kitap adı",
-  "desc": "Kitabın açıklaması",
-  "author": "Yazar",
+  "title": "Kitap adı - string",
+  "desc": "Kitabın açıklaması - string",
+  "author": "Yazar - string",
   "publishYear": 2010
 }
 
