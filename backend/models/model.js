@@ -11,4 +11,4 @@ const Book = mongoose.model('Book', new Schema({
   dateAdded: { type: String, default: DateLocate() }
 }));
 
-module.exports = { Book }
+module.exports = Book 

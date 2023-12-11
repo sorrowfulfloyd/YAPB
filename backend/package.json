@@ -2,9 +2,9 @@
   "name": "yazilimogreniyorum",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "start.js",
   "scripts": {
-    "dev": "nodemon main.js"
+    "dev": "nodemon start.js"
   },
   "keywords": [],
   "author": "",
