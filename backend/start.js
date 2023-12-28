@@ -1,14 +1,13 @@
+require('dotenv').config()
 const connectToDB = require('./db_connection/connect')
 const app = require('./app/app')
 
-
-require('dotenv').config({ path: '.env' });
-const MONGO_URI = process.env.DB_ADRESS;
+const DB_ADDRESS = process.env.DB_ADDRESS;
 const PORT = process.env.PORT || 5500;
 
 const startServer = async () => {
   try {
-    await connectToDB(MONGO_URI);
+    await connectToDB(DB_ADDRESS);
     app.listen(PORT, () => {
       console.log(`Bi' dakika şef, ateşliyorum... 🔥🔥🔥\nTamamdır, içerdeyiz. Port: ${PORT}`)
 

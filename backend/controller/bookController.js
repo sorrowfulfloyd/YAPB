@@ -5,14 +5,18 @@ const getOneBook = async (req, res) => {
 
   return singleBookObj ?
     res.status(200).json({
-      'İstediğiniz obje bulundu!': { 'Kitap': singleBookObj }
+      'İstediğiniz obje bulundu!': { Kitap: singleBookObj }
     })
-    : res.status(404).json({ 'Hata': 'Verilen id ile veritabanında bir obje bulunamadı', 'id': req.params.id });
+    : res.status(404).json({Error: 'Verilen id ile veritabanında bir obje bulunamadı', id: req.params.id });
 }
 
 const getAllBooks = async (req, res) => {
-  const allBooks = await Book.find();
-  return res.status(200).json({ 'Bütün kitapların sayısı': allBooks.length, 'Kitaplar': allBooks })
+  const page = Number(req.query.params) || 1;
+  const limit = Number(req.query.params) || 10;
+  const skipCount = (page - 1) * limit;
+
+  const allBooks = await Book.find({}).skip(skipCount).limit(limit);
+  return res.status(200).json({ 'Bütün kitapların sayısı': allBooks.length, Kitaplar: allBooks })
 }
 
 const postABook = async (req, res) => {
@@ -23,7 +27,6 @@ const postABook = async (req, res) => {
   const newBook = new Book({ ...req.body });
   const book = await newBook.save();
 
-  console.log(`Yeni bir kitap başarıyla veritabanında oluşturuldu!\n %j`, book);
   return res.status(201).json({
     Status: '201 - Oluşturuldu',
     message: 'Gönderdiğiniz obje ile veritabanında yeni bir kitap başarıyla oluşturuldu.',
@@ -50,10 +53,17 @@ const deleteBook = async (req, res) => {
 }
 
 exampleRequest = {
-  "title": "Kitap adı - string",
-  "desc": "Kitabın açıklaması - string",
-  "author": "Yazar - string",
-  "publishYear": 2010
+  title: "Kitap adı - string",
+  desc: "Kitabın açıklaması - string",
+  publisher: 'Yayınevi -string',
+  publishYear: 'Yayın yılı - number',
+  edition: 'Baskı sayısı - string [ZORUNLU DEĞİL]',
+  language: 'Kitap dili - string',
+  author: "Yazar (kitabın dili Türkçe ise) - string",
+  translator: 'Çevirmen (kitabın dili Türkçe değilse) - string',
+  isbn: 'Barkod numarası - number [13 HANE]',
+  stock: 'Stok bilgisi - number',
+  price: 'Fiyat bilgisi - number'
 }
 
 module.exports = { getOneBook, getAllBooks, postABook, updateBook, deleteBook }

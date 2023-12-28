@@ -1,6 +1,6 @@
 const errorHandler = (err, req, res, next) => {
 
-  if (err.name == 'ValidationError' || err.name == 'CastError') {
+  if (err.name === 'ValidationError' || err.name === 'CastError') {
     return res.status(403).json({ message: 'Bir şeyler ters gitti!', error: err.message })
   }
 
