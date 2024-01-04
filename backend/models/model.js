@@ -3,55 +3,113 @@ const { Schema } = mongoose;
 
 const DateLocale = () => new Date().toLocaleString('tr-TR');
 
-const bookSchema =  new Schema({
-  title: { type: String, required: [true, 'Kitap adı boş bırakılamaz'] , cast: [false, "Kitap adı string olmalı"]},
-  desc: { type: String, required: [true, 'Kitap açıklaması boş bırakılamaz'], cast: [false, "Kitap açıklaması string olmalı"], minLength: [10, "Açıklama en az 10 karakter olmalı."] },
-  publisher: { type: String, required: [true, "Yayınevi boş bırakılamaz"], cast: [false, "Yayınevi adı string olmalı"]},
-  publishYear: { type: Number, required: [true, 'Basım tarihi boş bıraklamaz'], cast: [false, "Yayınlama yılı sayı olmalı"], min: [0, 'İzin verilen en düşük değer 0'], max: [2024, 'İzin verilen en yüksek değer 2024'] },
-  edition: { type: String, cast: [false, 'Baskı sayısı string olmalı'], default: '1' },
-  language: { type: String, required: [true, 'Kitap dili boş bırakılamaz'], cast: [false, "Dil string olmalı"], min: [3, 'İzin verilen en düşük değer 3']},
-  author: { type: String, cast: [false, "Yazar adı string olmalı"], },
-  translator: { type: String, cast: [false, 'Çevirmen adı string olmalı'], },
-  isbn: { type: Number, required: [true, 'Barkod numarası boş bırakılamaz'], cast: [false, "Barkod sayı olmalı"], min: [1000000000000, "Barkod 13 hane olmalı"], max: [9999999999999, "Barkod 13 hane olmalı"]},
-  stock: { type: Number, required: [true, 'Stok bilgisi boş bırakılamaz'], cast: [false, 'Stok bilgisi sayı olmalı'], min: [0, 'İzin verilen en düşük değer 0']},
-  price: {type: Number, required: [true, "Fiyat bilgisi boş bırakılamaz"], cast: [false, "Fiyat sayı olmalı"], min: [5, "5TL'den ucuz kitap olamaz, belki ayraç olabilir ama o da zaten kitap değil."]},  
-  dateAdded: { type: String, default: DateLocale() },
+const Book = mongoose.model('Book', new Schema({
+  // Kitap Bilgileri
+  title: {
+    type: String,
+    required: [true, "Başlık boş bırakılamaz"],
+    cast: [false, "Bu değer string olmalıdır"]
   },
-    { timestamps: { createdAt: false, updatedAt: true } }
-);
+  author: {
+    type: String,
+    required: [true, "Yazar boş bırakılamaz"],
+    cast: [false, "Bu değer string olmalıdır"]
+  },
+  description: {
+    type: String,
+    required: false,
+    cast: [false, "Bu değer string olmalıdır"]
+  },
+  category: {
+    type: String,
+    required: [true, "Kategori boş bırakılamaz"],
+    cast: [false, "Bu değer string olmalıdır"]
+  },
+  language: {
+    type: String,
+    required: [true, "Dil boş bırakılamaz"],
+    cast: [false, "Bu değer string olmalıdır"]
+  },
 
-bookSchema.pre('validate', function(next) {
-  this.language = this.language.charAt(0).toUpperCase() + this.language.slice(1).toLowerCase();
-  
-  if(this.language === 'Türkçe') {
-    if (!this.author) {
-      const error = new mongoose.Error.ValidationError(this);
-      error.message = 'Yazar adı boş bırakılamaz';
-      return next(error);
-    }
-    if (this.translator !== undefined) {
-      const error = new mongoose.Error.ValidationError(this);
-      error.message = 'Türkçe kitaplar için çevirmen gerekmez'
-      return next(error);
-    }
-  };
+  // Yayın Bilgileri
+  publicationDate: {
+    type: String,
+    required: [true, "Basım tarihi boş bırakılamaz"],
+    cast: [false, "Basım tarihi String olmalıdır"]
+  },
+  edition: {
+    type: Number,
+    required: [true, "Baskı boş bırakılamaz"],
+    min: [1, "Baskı numarası en az 1 olabilir"],
+    cast: [false, "Bu değer rakam olmalıdır"]
+  },
+  placeOfPublication: {
+    type: String,
+    required: [true, "Basım yeri boş bırakılamaz"],
+    cast: [false, "Bu değer string olmalıdır"]
+  },
 
-  if(this.language !== 'Türkçe') {
-    if (!this.translator) {
-      const error = new mongoose.Error.ValidationError(this);
-      error.message = 'Yabancı dil kitap için çevirmen adı boş bırakılamaz';
-      return next(error);
-    }
-    if (!this.author) {
-      const error = new mongoose.Error.ValidationError(this);
-      error.message = 'Yabancı dil kitap için yazar boş bırakılamaz';
-      return next(error);
-    }
-  };
+  // Fiziksel Özellikler
+  width: {
+    type: Number,
+    required: [true, "Genişlik boş bırakılamaz"],
+    min: [1, "Genişlik en az 1 olabilir"],
+    cast: [false, "Bu değer rakam olmalıdır"]
+  },
+  height: {
+    type: Number,
+    required: [true, "Yükseklik boş bırakılamaz"],
+    min: [1, "Yükseklik en az 1 olabilir"],
+    cast: [false, "Bu değer rakam olmalıdır"]
+  },
+  pageCount: {
+    type: Number,
+    required: [true, "Sayfa sayısı boş bırakılamaz"],
+    min: [1, "Sayfa sayısı en az 1 olabilir"],
+    cast: [false, "Bu değer rakam olmalıdır"]
+  },
+  coverType: {
+    type: String,
+    required: [true, "Kapak türü boş bırakılamaz"],
+    cast: [false, "Bu değer string olmalıdır"]
+  },
+  paperType: {
+    type: String,
+    required: [true, "Kağıt türü boş bırakılamaz"],
+    cast: [false, "Bu değer string olmalıdır"]
+  },
 
-  next();
-});
+  // Stok ve Fiyatlandırma
+  barcode: {
+    type: Number,
+    required: [true, "Barkod boş bırakılamaz"],
+    min: [1000000000000, "Barkod 13 hane olmalıdır."],
+    max: [9999999999999, "Barkod 13 hane olmalıdır."],
+    unique: true,
+    cast: [false, "Bu değer rakam olmalıdır"]
+  },
+  stock: {
+    type: Number,
+    required: [true, "Stok miktarı boş bırakılamaz"],
+    min: [0, "Stok miktarı en az 0 olabilir"],
+    cast: [false, "Bu değer rakam olmalıdır"]
+  },
+  price: {
+    type: Number,
+    required: [true, "Fiyat boş bırakılamaz"],
+    min: [0, "Fiyat en az 0 olabilir"],
+    cast: [false, "Bu değer rakam olmalıdır"]
+  },
 
-const Book = mongoose.model('Book', bookSchema);
+  // Diğer Bilgiler
+  image: {
+    type: String,
+    required: false,
+    cast: [false, "Bu değer string olmalıdır"]
+  },
+  dateAdded: { type: String, default: DateLocale() },
+},
+  { timestamps: { createdAt: false, updatedAt: true } }
+));
 
 module.exports = Book 
