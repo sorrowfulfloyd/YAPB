@@ -76,7 +76,7 @@ const getAllBooks = async (req, res) => {
 
 	const allBooks = await result;
 
-	// console.log(result);
+	console.log(result);
 
 	return res
 		.status(200)
