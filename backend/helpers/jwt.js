@@ -3,9 +3,9 @@ const jwt = require("jsonwebtoken");
 const KEY = process.env.TOKEN_KEY;
 
 const createToken = (username) => {
-	const token = jwt.sign({ for: username }, KEY, { expiresIn: "1w" });
-
-	return token ? true : false;
+	return username
+		? jwt.sign({ for: username }, KEY, { expiresIn: "1w" })
+		: null;
 };
 
 const validateToken = (token) => {
