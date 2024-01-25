@@ -1,5 +1,5 @@
 const User = require("../models/Users");
-const { createToken, validateToken } = require("../middleware/auth/token.js");
+const { createToken, validateToken } = require("../helpers/jwt.js");
 
 const login = async (req, res) => {
 	const { username } = req.body;
@@ -12,16 +12,10 @@ const login = async (req, res) => {
 };
 
 const cokGizli = async (req, res) => {
-	const { token } = req.headers;
-	console.log(token);
-
-	if (validateToken(token)) {
-		return res.status(200).json({
-			"çok gizli mesaj":
-				"Tebrikler içeridesin! Hadi çabuk, PEŞİMİZDELER!!! Her an bizi bulabilirler. Bunlar ne mi? Lozan'ın gizli madd...",
-		});
-	}
-	return res.status(404).json("bizimle değilsin");
+	return res.status(200).json({
+		"çok gizli mesaj":
+			"Tebrikler içeridesin! Hadi çabuk, PEŞİMİZDELER!!! Her an bizi bulabilirler. Bunlar ne mi? Lozan'ın gizli madd...",
+	});
 };
 
 module.exports = { login, cokGizli };

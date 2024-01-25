@@ -3,16 +3,18 @@ const jwt = require("jsonwebtoken");
 const KEY = process.env.TOKEN_KEY;
 
 const createToken = (username) => {
-	return username
-		? jwt.sign({ for: username }, KEY, { expiresIn: "1w" })
-		: null;
+	const token = jwt.sign({ for: username }, KEY, { expiresIn: "1w" });
+
+	return token ? true : false;
 };
 
 const validateToken = (token) => {
-	const result = jwt.verify(token, KEY, (error, token) => {
-		return token ? true : false;
+	return jwt.verify(token, KEY, (error, token) => {
+		if (error) {
+			return null;
+		}
+		return token;
 	});
-	return result;
 };
 
 module.exports = { createToken, validateToken };
