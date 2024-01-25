@@ -1,4 +1,4 @@
-const Book = require("../models/model");
+const Book = require("../models/Books");
 const replaceTurkishChars = require("../helpers/replaceTurkishChars");
 
 const getOneBook = async (req, res) => {
